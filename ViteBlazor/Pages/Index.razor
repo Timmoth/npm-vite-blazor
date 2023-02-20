@@ -1,0 +1,29 @@
+﻿@page "/"
+
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<h1>Check the console -> </h1>
+
+@code {
+    private IJSInProcessObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSInProcessObjectReference>("import",
+            "./js/mylib.min.js");
+
+            module.InvokeVoid("HelloWorld");
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}
